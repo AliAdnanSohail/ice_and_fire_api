@@ -1,6 +1,6 @@
-from rest_framework import serializers
-from .models import Book
 import json
+from rest_framework import serializers
+from .models.book import Book
 
 
 class AuthorListField(serializers.ListField):
