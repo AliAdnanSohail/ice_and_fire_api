@@ -1,14 +1,12 @@
+import json
 from django.db.models import Q
 from django.http import Http404
 from rest_framework import status
-import json
-import requests
-
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializers import BookSerializer
-from .models import Book
+from ..serializers import BookSerializer
+from ..models.book import Book
 
 
 class BookList(APIView):
@@ -86,20 +84,3 @@ class BookDetail(APIView):
         return_response = {'data': [], 'message': message,
                            'status': 'success', 'status_code': status.HTTP_204_NO_CONTENT}
         return Response(return_response, status=status.HTTP_204_NO_CONTENT)
-
-
-class ExternalBookList(APIView):
-    def format_external_books(self, book):
-        return {'name': book['name'], 'isbn': book['isbn'], 'authors': book['authors'],
-                'number_of_pages': book['numberOfPages'], 'publisher': book['publisher'],
-                'country': book['country'], 'release_date': book['released']}
-
-    def get(self, request):
-        query_params = request.query_params
-        base_url = 'https://www.anapioficeandfire.com/api/books'
-        res = requests.get(url=base_url, params=query_params)
-        status_code, all_books = res.status_code, res.json()
-        all_books = [self.format_external_books(book) for book in all_books]
-        return_response = {'data': all_books, 'status_code': status_code, 'status': 'success'}
-        return Response(return_response, status=status.HTTP_200_OK)
-
